@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Armazenamento da Base</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #eee;
+      font-family: monospace;
+      padding: 20px;
+    }
+    .panel {
+      border: 1px solid #444;
+      background-color: #222;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      color: #ff4444;
+    }
+    button {
+      margin-top: 10px;
+      padding: 8px;
+      background-color: #444;
+      color: #eee;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #666;
+    }
+  </style>
+</head>
+<body>
+  <h1>📦 Armazenamento da Base</h1>
+
+  <div class="panel">
+    <h2>Recursos</h2>
+    <p>🍞 Comida: <span id="comidaAtual">0</span> / <span id="comidaMax">100</span></p>
+    <p>🔧 Sucata: <span id="sucataAtual">0</span> / <span id="sucataMax">80</span></p>
+    <p>👥 Pessoas na base: <span id="pessoasAtual">0</span> / <span id="pessoasMax">20</span></p>
+  </div>
+
+  <div class="panel">
+    <h2>Ações</h2>
+    <button onclick="adicionar('comida',1)">Adicionar 1 Comida</button>
+    <button onclick="adicionar('comida',5)">Adicionar 5 Comida</button>
+    <button onclick="adicionar('comida',10)">Adicionar 10 Comida</button>
+    <button onclick="adicionar('sucata',1)">Adicionar 1 Sucata</button>
+    <button onclick="adicionar('sucata',5)">Adicionar 5 Sucata</button>
+    <button onclick="adicionar('sucata',10)">Adicionar 10 Sucata</button>
+    <button onclick="adicionar('pessoas',1)">Adicionar 1 Pessoa</button>
+     <button onclick="adicionar('pessoas',5)">Adicionar 5 Pessoa</button>
+     <button onclick="adicionar('pessoas',10)">Adicionar 10 Pessoa</button>
+    <br><br>
+    <button onclick="melhorarBase()">🔨 Melhorar Base</button>
+  </div>
+
+  <script>
+    let recursos = {
+      comida: { atual: 50, max: 100 },
+      sucata: { atual: 30, max: 80 },
+      pessoas: { atual: 10, max: 20 }
+    };
+
+    function atualizarDisplay() {
+      document.getElementById("comidaAtual").textContent = recursos.comida.atual;
+      document.getElementById("comidaMax").textContent = recursos.comida.max;
+      document.getElementById("sucataAtual").textContent = recursos.sucata.atual;
+      document.getElementById("sucataMax").textContent = recursos.sucata.max;
+      document.getElementById("pessoasAtual").textContent = recursos.pessoas.atual;
+      document.getElementById("pessoasMax").textContent = recursos.pessoas.max;
+    }
+
+    function adicionar(tipo, quantidade) {
+      if (recursos[tipo].atual + quantidade <= recursos[tipo].max) {
+        recursos[tipo].atual += quantidade;
+      } else {
+        alert("⚠️ Capacidade máxima atingida para " + tipo);
+      }
+      atualizarDisplay();
+    }
+
+    function melhorarBase() {
+      recursos.comida.max += 50;
+      recursos.sucata.max += 40;
+      recursos.pessoas.max += 10;
+      alert("✅ A base foi melhorada! Capacidade aumentada.");
+      atualizarDisplay();
+    }
+
+    atualizarDisplay();
+  </script>
+</body>
+</html>
