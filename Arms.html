@@ -51,18 +51,26 @@
     <button onclick="adicionar('sucata',5)">Adicionar 5 Sucata</button>
     <button onclick="adicionar('sucata',10)">Adicionar 10 Sucata</button>
     <button onclick="adicionar('pessoas',1)">Adicionar 1 Pessoa</button>
-     <button onclick="adicionar('pessoas',5)">Adicionar 5 Pessoa</button>
-     <button onclick="adicionar('pessoas',10)">Adicionar 10 Pessoa</button>
+    <button onclick="adicionar('pessoas',5)">Adicionar 5 Pessoas</button>
+    <button onclick="adicionar('pessoas',10)">Adicionar 10 Pessoas</button>
     <br><br>
     <button onclick="melhorarBase()">🔨 Melhorar Base</button>
+    <button onclick="resetarBase()">❌ Resetar Base</button>
   </div>
 
   <script>
-    let recursos = {
-      comida: { atual: 50, max: 100 },
-      sucata: { atual: 30, max: 80 },
-      pessoas: { atual: 10, max: 20 }
+    const STORAGE_KEY = "recursosBase";
+
+    // Carregar recursos salvos ou iniciar padrão
+    let recursos = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+      comida: { atual: 0, max: 100 },
+      sucata: { atual: 0, max: 80 },
+      pessoas: { atual: 0, max: 20 }
     };
+
+    function salvar() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(recursos));
+    }
 
     function atualizarDisplay() {
       document.getElementById("comidaAtual").textContent = recursos.comida.atual;
@@ -79,6 +87,7 @@
       } else {
         alert("⚠️ Capacidade máxima atingida para " + tipo);
       }
+      salvar();
       atualizarDisplay();
     }
 
@@ -87,7 +96,21 @@
       recursos.sucata.max += 40;
       recursos.pessoas.max += 10;
       alert("✅ A base foi melhorada! Capacidade aumentada.");
+      salvar();
       atualizarDisplay();
+    }
+
+    function resetarBase() {
+      if (confirm("Tem certeza que deseja resetar a base?")) {
+        recursos = {
+          comida: { atual: 0, max: 100 },
+          sucata: { atual: 0, max: 80 },
+          pessoas: { atual: 0, max: 20 }
+        };
+        salvar();          // salva os valores resetados
+        atualizarDisplay(); // atualiza na tela
+        alert("🔄 Base resetada com sucesso!");
+      }
     }
 
     atualizarDisplay();
