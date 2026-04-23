@@ -57,6 +57,10 @@
     <button onclick="melhorarBase()">🔨 Melhorar Base</button>
     <button onclick="resetarBase()">❌ Resetar Base</button>
   </div>
+<div class="panel">
+  <h2>Navegação</h2>
+  <button onclick="window.location.href='index.html'">Voltar para Painel de Comando</button>
+</div>
 
   <script>
     const STORAGE_KEY = "recursosBase";
@@ -84,7 +88,11 @@
     function adicionar(tipo, quantidade) {
       if (recursos[tipo].atual + quantidade <= recursos[tipo].max) {
         recursos[tipo].atual += quantidade;
-      } else {
+      } else {<div class="panel">
+  <h2>Navegação</h2>
+  <button onclick="window.location.href='painel.html'">Voltar para Painel de Comando</button>
+</div>
+
         alert("⚠️ Capacidade máxima atingida para " + tipo);
       }
       salvar();
