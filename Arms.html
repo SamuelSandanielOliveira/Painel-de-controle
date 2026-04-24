@@ -57,7 +57,12 @@
     <button onclick="melhorarBase()">🔨 Melhorar Base</button>
     <button onclick="resetarBase()">❌ Resetar Base</button>
   </div>
-  
+
+  <div class="panel">
+  <h2>Navegação</h2>
+  <button onclick="window.location.href='index.html'">Voltar para Painel de Comando</button>
+</div>
+
   <script>
     const STORAGE_KEY = "recursosBase";
 
@@ -82,13 +87,12 @@
     }
 
     function adicionar(tipo, quantidade) {
+      // garante que o objeto existe
+      if (!recursos[tipo]) return;
+
       if (recursos[tipo].atual + quantidade <= recursos[tipo].max) {
         recursos[tipo].atual += quantidade;
-      } else {<div class="panel">
-  <h2>Navegação</h2>
-  <button onclick="window.location.href='painel.html'">Voltar para Painel de Comando</button>
-</div>
-
+      } else {
         alert("⚠️ Capacidade máxima atingida para " + tipo);
       }
       salvar();
@@ -111,8 +115,8 @@
           sucata: { atual: 0, max: 80 },
           pessoas: { atual: 0, max: 20 }
         };
-        salvar();          // salva os valores resetados
-        atualizarDisplay(); // atualiza na tela
+        salvar();
+        atualizarDisplay();
         alert("🔄 Base resetada com sucesso!");
       }
     }
