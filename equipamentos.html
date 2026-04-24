@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestão de Equipamentos</title>
+  <style>
+    body { background:#111; color:#eee; font-family:monospace; padding:20px; }
+    .panel { border:1px solid #444; background:#222; padding:15px; margin-bottom:20px; }
+    h1 { color:#ff4444; }
+    button { margin:5px; padding:8px; background:#444; color:#eee; border:none; cursor:pointer; }
+    button:hover { background:#666; }
+  </style>
+</head>
+<body>
+  <h1>🔫 Gestão de Equipamentos</h1>
+  <div class="panel">
+    <h2>Balas de Fogo</h2>
+    <p>Quantidade: <span id="balasAtual">0</span> / <span id="balasMax">50</span></p>
+    <button onclick="adicionarBalas(1)">+1 Bala</button>
+    <button onclick="adicionarBalas(5)">+5 Balas</button>
+    <button onclick="adicionarBalas(10)">+10 Balas</button>
+    <br><br>
+    <button onclick="melhorarArmazem()">🔨 Melhorar Armazém</button>
+    <button onclick="resetarEquipamentos()">❌ Resetar</button>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "equipamentosBase";
+    let equipamentos = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+      balas: { atual: 0, max: 50 }
+    };
+
+    function salvar() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(equipamentos));
+    }
+
+    function atualizarDisplay() {
+      document.getElementById("balasAtual").textContent = equipamentos.balas.atual;
+      document.getElementById("balasMax").textContent = equipamentos.balas.max;
+    }
+
+    function adicionarBalas(qtd) {
+      if (equipamentos.balas.atual + qtd <= equipamentos.balas.max) {
+        equipamentos.balas.atual += qtd;
+      } else {
+        alert("⚠️ Capacidade máxima atingida!");
+      }
+      salvar();
+      atualizarDisplay();
+    }
+
+    function melhorarArmazem() {
+      equipamentos.balas.max += 20;
+      alert("✅ Armazém melhorado! Capacidade aumentada.");
+      salvar();
+      atualizarDisplay();
+    }
+
+    function resetarEquipamentos() {
+      if (confirm("Resetar equipamentos?")) {
+        equipamentos = { balas: { atual: 0, max: 50 } };
+        salvar();
+        atualizarDisplay();
+      }
+    }
+
+    atualizarDisplay();
+  </script>
+</body>
+</html>

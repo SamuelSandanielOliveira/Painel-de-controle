@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel de Comando</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #eee;
+      font-family: monospace;
+      padding: 20px;
+    }
+    #output, #notes {
+      border: 1px solid #444;
+      padding: 10px;
+      margin-top: 20px;
+      min-height: 100px;
+      background-color: #222;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      background-color: #222;
+      border: 1px solid #444;
+      color: #eee;
+      margin-top: 10px;
+    }
+    button {
+      padding: 10px;
+      margin-top: 10px;
+      background-color: #444;
+      color: #eee;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #666;
+    }
+    h1 {
+      color: #ff4444;
+    }
+    .highlight {
+      color: #ffcc00;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Painel de Comando</h1>
+  <p>Digite um comando para descobrir um evento do mundo.</p>
+  <p><strong>Comandos disponíveis:</strong> ordem_morta, fim_kian, morte_joui, equipe_verissimo, desconjuracao</p>
+  
+  <input id="commandInput" type="text" placeholder="Digite seu comando aqui...">
+  <div id="output"></div>
+
+  <h2>📓 Anotações</h2>
+  <textarea id="noteInput" placeholder="Escreva sua anotação aqui..."></textarea>
+  <button id="saveNote">Salvar anotação</button>
+  <button id="clearNotes">Apagar todas as anotações</button>
+  <button id="exportNotes">Exportar TXT</button>
+  <button id="exportJSON">Exportar JSON</button>
+  <p id="noteCount">Total de anotações: 0</p>
+  
+  <input id="searchInput" type="text" placeholder="Buscar anotação...">
+  <div id="notes"></div>
+<div class="panel">
+  <h2>Navegação</h2>
+  <button onclick="window.location.href='armazenamento.html'">Ir para Armazenamento da Base</button>
+</div>
+
+
+  <script>
+    const eventos = {
+      ordem_morta: "Toda a Ordem foi destruída. Nenhum agente restou para proteger o mundo.",
+      fim_kian: "Kian venceu a luta contra os agentes, mas morreu devido aos ferimentos, impedindo a calamidade.",
+      morte_joui: "Joui foi espancado até a morte por Kian, diante dos olhos da equipe Veríssimo.",
+      equipe_verissimo: "A equipe Veríssimo testemunhou a queda de Joui e lutou bravamente contra Kian.",
+      desconjuracao: "Na desconjuração, Kian triunfou, mas sua morte selou o destino e impediu a calamidade."
+    };
+
+    const input = document.getElementById("commandInput");
+    const output = document.getElementById("output");
+    const noteInput = document.getElementById("noteInput");
+    const saveNote = document.getElementById("saveNote");
+    const clearNotes = document.getElementById("clearNotes");
+    const exportNotes = document.getElementById("exportNotes");
+    const exportJSON = document.getElementById("exportJSON");
+    const notes = document.getElementById("notes");
+    const searchInput = document.getElementById("searchInput");
+
+    function carregarNotas(filtro = "") {
+      notes.innerHTML = "";
+      const armazenadas = JSON.parse(localStorage.getItem("anotacoes")) || [];
+      armazenadas.forEach((item, index) => {
+        if (filtro && !item.texto.toLowerCase().includes(filtro.toLowerCase())) return;
+        const p = document.createElement("p");
+        let textoFormatado = item.texto;
+        ["alerta", "importante", "missao"].forEach(palavra => {
+          const regex = new RegExp(palavra, "gi");
+          textoFormatado = textoFormatado.replace(regex, `<span class="highlight">${palavra}</span>`);
+        });
+        p.innerHTML = `🖊️ [${item.data}] ${textoFormatado} 
+          <button onclick="editarNota(${index})">Editar</button>
+          <button onclick="apagarNota(${index})">Apagar</button>`;
+        notes.appendChild(p);
+      });
+      document.getElementById("noteCount").textContent = "Total de anotações: " + armazenadas.length;
+    }
+
+    carregarNotas();
+
+    input.addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        const comando = input.value.trim().toLowerCase();
+        if (comando === "sair") {
+          output.innerHTML = "Encerrando o painel. Até a próxima investigação...";
+        } else if (eventos[comando]) {
+          output.innerHTML = eventos[comando];
+        } else {
+          output.innerHTML = "Comando desconhecido. Tente novamente.";
+        }
+        input.value = "";
+      }
+    });
+
+    saveNote.addEventListener("click", function() {
+      const texto = noteInput.value.trim();
+      if (texto) {
+        const dataHora = new Date().toLocaleString("pt-BR");
+        const armazenadas = JSON.parse(localStorage.getItem("anotacoes")) || [];
+        armazenadas.push({ texto, data: dataHora });
+        localStorage.setItem("anotacoes", JSON.stringify(armazenadas));
+        carregarNotas();
+        noteInput.value = "";
+      }
+    });
+
+    clearNotes.addEventListener("click", function() {
+      localStorage.removeItem("anotacoes");
+      carregarNotas();
+    });
+
+    exportNotes.addEventListener("click", function() {
+      const armazenadas = JSON.parse(localStorage.getItem("anotacoes")) || [];
+      if (armazenadas.length === 0) {
+        alert("Não há anotações para exportar.");
+        return;
+      }
+      const conteudo = armazenadas.map((item, i) => `Anotação ${i+1} [${item.data}]: ${item.texto}`).join("\n");
+      const blob = new Blob([conteudo], { type: "text/plain" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "anotacoes_rpg.txt";
+      link.click();
+    });
+
+    exportJSON.addEventListener("click", function() {
+      const armazenadas = JSON.parse(localStorage.getItem("anotacoes")) || [];
+      if (armazenadas.length === 0) {
+        alert("Não há anotações para exportar.");
+        return;
+      }
+      const blob = new Blob([JSON.stringify(armazenadas, null, 2)], { type: "application/json" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "anotacoes_rpg.json";
+      link.click();
+    });
+
+    searchInput.addEventListener("input", function() {
+      carregarNotas(searchInput.value);
+    });
+
+    window.editarNota = function(index) {
+      const armazenadas = JSON.parse(localStorage.getItem("anotacoes")) || [];
+      const novoTexto = prompt("Editar anotação:", armazenadas[index].texto);
+      if (novoTexto !== null) {
+        armazenadas[index].texto = novoTexto;
+        localStorage.setItem("anotacoes", JSON.stringify(armazenadas));
+        carregarNotas();
+      }
+    };
+
+    window.apagarNota = function(index) {
+      const armazenadas = JSON.parse(localStorage.getItem("anotacoes")) || [];
+      armazenadas.splice(index, 1);
+      localStorage.setItem("anotacoes", JSON.stringify(armazenadas));
+      carregarNotas();
+    };
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Sistema de Missões</title>
+  <style>
+    body { background:#111; color:#eee; font-family:monospace; padding:20px; }
+    .panel { border:1px solid #444; background:#222; padding:15px; margin-bottom:20px; }
+    h1 { color:#ff4444; }
+    button { margin:5px; padding:8px; background:#444; color:#eee; border:none; cursor:pointer; }
+    button:hover { background:#666; }
+  </style>
+</head>
+<body>
+  <h1>📜 Sistema de Missões</h1>
+  <div class="panel">
+    <input id="novaMissao" type="text" placeholder="Digite o nome da missão">
+    <button onclick="adicionarMissao()">Adicionar Missão</button>
+  </div>
+  <div class="panel">
+    <h2>Missões Registradas</h2>
+    <ul id="listaMissoes"></ul>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "missoesBase";
+    let missoes = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+    function salvar() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(missoes));
+    }
+
+    function atualizarLista() {
+      const lista = document.getElementById("listaMissoes");
+      lista.innerHTML = "";
+      missoes.forEach((m, i) => {
+        const li = document.createElement("li");
+        li.textContent = `${m.nome} - [${m.status}]`;
+        const btnConcluir = document.createElement("button");
+        btnConcluir.textContent = "Concluir";
+        btnConcluir.onclick = () => { missoes[i].status = "Concluída"; salvar(); atualizarLista(); };
+        li.appendChild(btnConcluir);
+        lista.appendChild(li);
+      });
+    }
+
+    function adicionarMissao() {
+      const nome = document.getElementById("novaMissao").value.trim();
+      if (nome) {
+        missoes.push({ nome, status: "Pendente" });
+        salvar();
+        atualizarLista();
+        document.getElementById("novaMissao").value = "";
+      }
+    }
+
+    atualizarLista();
+  </script>
+</body>
+</html>
