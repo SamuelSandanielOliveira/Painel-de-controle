@@ -12,8 +12,37 @@
 </head>
 <body>
   <h1>🏠 Interface de Navegação</h1>
+    <p><strong>Bem-vindos, Agentes!</strong><br>
+  Ao seu novo sistema de <strong>Investigação Paranormal</strong>: <em>Olho do Abismo</em>.<br>
+  Aqui vocês terão acesso às ferramentas essenciais para sua jornada</p>
   <p>Escolha um módulo:</p>
   <button onclick="window.location.href='Painel.html'">Painel de Comando</button>
   <button onclick="window.location.href='armazenamento.html'">Armazenamento da Base</button>
+
+  <!-- Olho do Abismo -->
+  <div id="olho">
+    <div id="pupila"></div>
+  </div>
+
+  <script>
+    const olho = document.getElementById("olho");
+    const pupila = document.getElementById("pupila");
+
+    document.addEventListener("mousemove", (e) => {
+      const olhoRect = olho.getBoundingClientRect();
+      const olhoX = olhoRect.left + olhoRect.width/2;
+      const olhoY = olhoRect.top + olhoRect.height/2;
+
+      const dx = e.clientX - olhoX;
+      const dy = e.clientY - olhoY;
+
+      // limitar movimento da pupila
+      const maxDist = 30;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      const ratio = dist > maxDist ? maxDist/dist : 1;
+
+      pupila.style.transform = `translate(${dx*ratio}px, ${dy*ratio}px)`;
+    });
+  </script>
 </body>
 </html>
