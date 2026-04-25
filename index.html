@@ -2,32 +2,103 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Menu Principal</title>
+  <title>Menu Principal - Olho do Abismo</title>
   <style>
-    body { background:#111; color:#eee; font-family:monospace; text-align:center; padding:50px; }
+    body { 
+      background:#111; 
+      color:#eee; 
+      font-family:monospace; 
+      text-align:center; 
+      padding:50px; 
+      overflow:hidden;
+    }
     h1 { color:#ff4444; }
-    button { margin:10px; padding:15px; background:#444; color:#eee; border:none; cursor:pointer; }
+    p { margin:20px 0; font-size:18px; }
+    button { 
+      margin:10px; 
+      padding:15px; 
+      background:#444; 
+      color:#eee; 
+      border:none; 
+      cursor:pointer; 
+      font-size:16px;
+    }
     button:hover { background:#666; }
+
+    /* Olho do Abismo */
+    #olho {
+      position:fixed;
+      bottom:20px;
+      right:20px;
+      width:120px;
+      height:120px;
+      background:#222;
+      border:4px solid #ff4444;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 0 20px #ff4444;
+      overflow:hidden;
+    }
+    #pupila {
+      width:40px;
+      height:40px;
+      background:#ff4444;
+      border-radius:50%;
+      transition:transform 0.1s linear, background 0.3s ease;
+    }
+    /* Pálpebra para piscar */
+    #palpebra {
+      position:absolute;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background:#111;
+      transform:translateY(-100%);
+      transition:transform 0.3s ease-in-out;
+      pointer-events:none;
+    }
+    #olho.piscando #palpebra {
+      transform:translateY(0);
+    }
   </style>
 </head>
 <body>
   <h1>🏠 Interface de Navegação</h1>
-    <p><strong>Bem-vindos, Agentes!</strong><br>
+  <p><strong>Bem-vindos, Agentes!</strong><br>
   Ao seu novo sistema de <strong>Investigação Paranormal</strong>: <em>Olho do Abismo</em>.<br>
-  Aqui vocês terão acesso às ferramentas essenciais para sua jornada</p>
-  <p>Escolha um módulo:</p>
-  <button onclick="window.location.href='Painel.html'">Painel de Comando</button>
-  <button onclick="window.location.href='armazenamento.html'">Armazenamento da Base</button>
+  Este olho vigia seus passos e acompanha cada movimento...</p>
 
+  <button onclick="window.location.href='painel.html'">📜 Painel de Comando</button>
+  <button onclick="window.location.href='armazenamento.html'">📦 Armazenamento da Base</button>
+  
   <!-- Olho do Abismo -->
   <div id="olho">
     <div id="pupila"></div>
+    <div id="palpebra"></div>
   </div>
+
+  <!-- Sons do Olho -->
+  <audio id="som1" src="https://actions.google.com/sounds/v1/ambiences/alien_world.ogg" preload="auto"></audio>
+  <audio id="som2" src="https://actions.google.com/sounds/v1/ambiences/haunted_house.ogg" preload="auto"></audio>
+  <audio id="som3" src="https://actions.google.com/sounds/v1/ambiences/metal_clang.ogg" preload="auto"></audio>
 
   <script>
     const olho = document.getElementById("olho");
     const pupila = document.getElementById("pupila");
+    const palpebra = document.getElementById("palpebra");
 
+    const sons = [
+      document.getElementById("som1"),
+      document.getElementById("som2"),
+      document.getElementById("som3")
+    ];
+
+    const cores = ["#ff4444", "#44ff44", "#4444ff"]; // vermelho, verde, azul
+
+    // Movimento da pupila seguindo o cursor
     document.addEventListener("mousemove", (e) => {
       const olhoRect = olho.getBoundingClientRect();
       const olhoX = olhoRect.left + olhoRect.width/2;
@@ -36,13 +107,40 @@
       const dx = e.clientX - olhoX;
       const dy = e.clientY - olhoY;
 
-      // limitar movimento da pupila
       const maxDist = 30;
       const dist = Math.sqrt(dx*dx + dy*dy);
       const ratio = dist > maxDist ? maxDist/dist : 1;
 
       pupila.style.transform = `translate(${dx*ratio}px, ${dy*ratio}px)`;
+
+      // tocar som aleatório quando o olho se move
+      const som = sons[Math.floor(Math.random()*sons.length)];
+      if (som.paused) {
+        som.currentTime = 0;
+        som.play().catch(()=>{}); 
+      }
     });
+
+    // Função para piscar e mudar cor
+    function piscar() {
+      olho.classList.add("piscando");
+      setTimeout(() => {
+        olho.classList.remove("piscando");
+        // mudar cor da pupila
+        const novaCor = cores[Math.floor(Math.random()*cores.length)];
+        pupila.style.background = novaCor;
+      }, 300);
+
+      // som ao piscar
+      const som = sons[Math.floor(Math.random()*sons.length)];
+      som.currentTime = 0;
+      som.play().catch(()=>{});
+    }
+
+    // Piscar aleatoriamente a cada 3 a 6 segundos
+    setInterval(() => {
+      if (Math.random() > 0.5) piscar();
+    }, 4000);
   </script>
 </body>
 </html>
